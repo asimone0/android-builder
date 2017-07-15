@@ -1,0 +1,8 @@
+#!/usr/bin/expect
+
+spawn sdkmanager --update;
+expect {
+    "Accept? (y/N):" { exp_send "y\r" ; exp_continue }
+    eof
+}
+puts "done: sdkmanager --update";
