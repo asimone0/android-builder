@@ -2,7 +2,14 @@
 
 A dockerfile to create an image that contains an debian-based environment suitable for building android applications.
 
-`Note`: The resulting image is quite large (depending on sdk components selected)
+`The resulting image is quite large (depending on sdk components selected)`
+
+## Important project note: 
+The project *must not* define the android sdk location 
+
+(for example, in a `local.properties` file)
+
+Doing so will conflict with the container's configuration
 
 ## Customizing
 The android environment is installed in the image using the android `sdkmanager` based on the the contents of `android-sdk-config\install`
