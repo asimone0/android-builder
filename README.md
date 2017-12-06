@@ -19,6 +19,8 @@ The android environment is installed in the image using the android `sdkmanager`
 docker build -t <image:tag> .
 ```
 
+`Note: When building on Windows, please make sure that expect/sdkmanager-update is using UNIX LF ednings`
+
 ## Usage
 When executing, mount a volume that maps the local project directory to _/project_
 
