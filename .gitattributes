@@ -1,0 +1,2 @@
+# Preserve line endings on bash script in Windows
+sdkmanager-update text eol=lf
