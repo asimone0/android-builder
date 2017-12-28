@@ -1,9 +1,10 @@
 FROM bitnami/minideb:stretch
 
-# This should reflect the latest android for linux  tools found on develop.android.com
-ENV ANDROID_TOOLS_DOWNLOAD sdk-tools-linux-3859397.zip
-ENV ANDROID_CONFIG_DIR /usr/local/bin/android-sdk-config
-ENV ANDROID_SDK_PATH /usr/local/bin/android-sdk
+ENV ANDROID_CONFIG_DIR=/usr/local/bin/android-sdk-config \
+    ANDROID_SDK_PATH=/usr/local/bin/android-sdk \
+    ANDROID_HOME=/usr/local/bin/android-sdk
+
+ENV PATH $PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
 
 RUN install_packages \
         ca-certificates \
@@ -11,27 +12,25 @@ RUN install_packages \
         wget \
         expect \
         openjdk-8-jdk \
-        unzip
+        unzip && \
+        mkdir -p $ANDROID_CONFIG_DIR && \
+        mkdir -p $ANDROID_SDK_PATH && \
+        mkdir /project
 
-RUN mkdir -p ${ANDROID_CONFIG_DIR}
-COPY android-sdk-config ${ANDROID_CONFIG_DIR}
-
-COPY expect/sdkmanager-update /usr/local/bin
-RUN chmod 755 /usr/local/bin/sdkmanager-update
-
-RUN mkdir -p ${ANDROID_SDK_PATH}
-
-RUN wget https://dl.google.com/android/repository/${ANDROID_TOOLS_DOWNLOAD} && \
-    unzip ${ANDROID_TOOLS_DOWNLOAD} && \
-    mv tools ${ANDROID_SDK_PATH} && \
-    rm ${ANDROID_TOOLS_DOWNLOAD}
-
-ENV ANDROID_HOME /usr/local/bin/android-sdk
-ENV PATH $PATH:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools
-
-RUN sdkmanager-update
-RUN sdkmanager --package_file=${ANDROID_CONFIG_DIR}/install
-RUN yes | sdkmanager --licenses
-
-RUN mkdir /project
 WORKDIR /project
+
+COPY android-sdk-config ${ANDROID_CONFIG_DIR}
+COPY expect/sdkmanager-update /usr/local/bin
+
+ENV ANDROID_TOOLS_DOWNLOAD=sdk-tools-linux-3859397.zip
+# Note: ANDROID_TOOLS_DOWNLOAD should reflect the latest android for linux tools 
+# found on https://developer.android.com/studio/index.html#downloads
+
+RUN chmod 755 /usr/local/bin/sdkmanager-update && \
+    wget https://dl.google.com/android/repository/${ANDROID_TOOLS_DOWNLOAD} && \
+    unzip $ANDROID_TOOLS_DOWNLOAD && \
+    mv tools $ANDROID_SDK_PATH && \
+    rm $ANDROID_TOOLS_DOWNLOAD && \
+    sdkmanager-update && \
+    sdkmanager --package_file=${ANDROID_CONFIG_DIR}/install && \
+    yes | sdkmanager --licenses
