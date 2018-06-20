@@ -12,14 +12,16 @@ The project *must not* define the android sdk location
 Doing so will conflict with the container's configuration
 
 ## Customizing
-The android environment is installed in the image using the android `sdkmanager` based on the the contents of `android-sdk-config\install`
+Do do a bug in sdkmanager (https://issuetracker.google.com/issues/66465833) the --package_file flag is currently unreliable and is not used.
+
+Components are installed in the command line within the dockerfile.
+
+Add sdkmanager commands inline as desired to customize the build environment output.
 
 ## Building
 ```sh
 docker build -t <image:tag> .
 ```
-
-`Note: When building on Windows, please make sure that expect/sdkmanager-update is using UNIX LF ednings`
 
 ## Usage
 When executing, mount a volume that maps the local project directory to _/project_
@@ -30,7 +32,3 @@ For example, from the _root_ of an android project:
 docker run -v $PWD:/project <image:tag> ./gradlew clean assembleDebug
 ```
 
-Useful information about the environment can be seen with the following command
-```sh
-docker run <image:tag> java -version && sdkmanager --list
-```
